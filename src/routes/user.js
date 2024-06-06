@@ -42,4 +42,4 @@ router.delete("/api/users/:id", resolveUserByID, (req, res) => {
   res.send(mockUsers);
 });
 
-module.exports = router;
+  module.exports = router;
