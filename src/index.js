@@ -5,10 +5,17 @@ const cookieParser = require("cookie-parser");
 const mockUsers = require("./utils/userData");
 const routes = require("./routes/index");
 const passport = require("passport");
+const mongoose = require("mongoose");
 require("./auth/local.js");
 const PORT = process.env.PORT || 5000;
 
 app.use(express.json());
+
+mongoose
+  .connect("mongodb://localhost/crud_operation_express")
+  .then(() => console.log("Connected to MongoDB Database"))
+  .catch((err) => console.log("Error: ", err));
+
 app.use(cookieParser("atiftheDeveloper"));
 app.use(
   session({
@@ -19,7 +26,11 @@ app.use(
       maxAge: 60000 * 60,
     },
   })
-);
+);  
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use(routes);
 
 app.get("/", (req, res) => {
@@ -72,12 +83,15 @@ app.post("/api/auth", passport.authenticate("local"), (req, res) => {
   console.log(req.session);
   res.status(200).send("authenticated");
 });
-app.get("/api/auth/status", (req, res) => {
-  return req.user
-    ? res.status(200).send(req.user)
-    : res.status(401).send({ msg: "Not Authenticated" });
-});
 
+app.get("/api/auth/status", (req, res) => {
+  // console.log("Inside /api/auth/status endpoint");
+  if (req.user) {
+    res.status(200).json({msg: "USer is loged in"});
+  } else {
+    res.status(401).send({ msg: "Not Authenticated" });
+  }
+});
 
 app.listen(PORT, (req, res) => {
   console.log("Listening on port : ", PORT);

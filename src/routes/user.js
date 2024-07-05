@@ -1,5 +1,7 @@
 const Router = require("express");
 const router = Router();
+const passport = require("passport");
+const User = require("../schemas/usersSchema");
 
 const mockUsers = require("../utils/userData");
 const resolveUserByID = require("../utils/middleWare");
@@ -15,13 +17,40 @@ router.get("/api/users/:id", resolveUserByID, (req, res) => {
   }
   res.send(userFind);
 });
-router.post("/api/users", (req, res) => {
-  const { body } = req;
-  const newUser = { id: mockUsers[mockUsers.length - 1].id + 1, ...body };
-  mockUsers.push(newUser);
-  res.send(newUser);
-  console.log(mockUsers);
-});
+// router.post("/api/users", (req, res) => {
+//   const { body } = req;
+//   const newUser = { id: mockUsers[mockUsers.length - 1].id + 1, ...body };
+//   mockUsers.push(newUser);
+//   res.send(newUser);
+//   console.log(mockUsers);
+// });
+
+//Post method with mongoDB database:-
+router.post("/api/register", async (req, res) => {
+    const {body} = req;
+    const newUser = new User(body);
+    try {
+      const savedUser = await newUser.save();
+      res.status(201).send("User Created successfully", savedUser);
+    } catch (error) {
+      console.log(`Error: ${error}`)
+      res.status(400);
+    }
+})
+
+// router.post("/api/login", passport.authenticate("local"), (req, res) => {
+//   console.log(req.session);
+//   res.status(200).send("User Loged in");
+// });
+
+// router.get("/api/login/status", (req, res) => {
+//   // console.log("Inside /api/auth/status endpoint");
+//   if (req.user) {
+//     res.status(200).send("Authenticated", req.user);
+//   } else {
+//     res.status(401).send({ msg: "Not Authenticated" });
+//   }
+// });
 
 router.put("/api/users/:id", resolveUserByID, (req, res) => {
   const { body, findUserIndex } = req;
@@ -42,4 +71,4 @@ router.delete("/api/users/:id", resolveUserByID, (req, res) => {
   res.send(mockUsers);
 });
 
-  module.exports = router;
+module.exports = router;
