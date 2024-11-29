@@ -38,10 +38,10 @@ router.post("/api/register", async (req, res) => {
     }
 })
 
-// router.post("/api/login", passport.authenticate("local"), (req, res) => {
-//   console.log(req.session);
-//   res.status(200).send("User Loged in");
-// });
+router.post("/api/login", passport.authenticate("local"), (req, res) => {
+  console.log(req.session);
+  res.status(200).send("User Loged in");
+});
 
 // router.get("/api/login/status", (req, res) => {
 //   // console.log("Inside /api/auth/status endpoint");

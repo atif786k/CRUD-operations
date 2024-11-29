@@ -32,6 +32,26 @@ router.get("/product-fetch", async (req, res) => {
     }
 })
 
+router.patch("/product-edit/:id", async (req, res) => {
+    if (!req.user) {
+        return res.status(401).json({ msg: "Not Authenticated" });
+    }
+
+    const { params: { id } } = req;
+    const { liked } = req.body;
+
+    try {
+        const findProduct = await Product.findById(id);
+        if (!findProduct) {
+            return res.status(404).json({ msg: "Product not found" });
+        }
+        const updatedProduct = await Product.updateOne({ _id: id }, { liked: liked });
+        res.status(200).json({ msg: "Product updated successfully", updatedProduct});
+    } catch (error) {
+        res.status(500).json({ msg: "Some error occurred", error: error.message });
+    }
+});
+
 router.delete("/product-delete/:id", async (req, res) => {
     if(!req.user){return res.status(401).json({msg: "Not Authenticated"})};
 

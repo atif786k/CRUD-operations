@@ -6,10 +6,12 @@ const mockUsers = require("./utils/userData");
 const routes = require("./routes/index");
 const passport = require("passport");
 const mongoose = require("mongoose");
+const path = require("path")
 require("./auth/local.js");
 const PORT = process.env.PORT || 5000;
 
 app.use(express.json());
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 mongoose
   .connect("mongodb://localhost/crud_operation_express")
@@ -35,10 +37,8 @@ app.use(routes);
 
 app.get("/", (req, res) => {
   // res.cookie("atif", " ", { maxAge: 60000 * 60 })
-  console.log(req.session);
-  console.log(req.session.id);
   req.session.visited = true;
-  res.send("Home Page 🏠");
+  res.send("Home Page 🏠, This whole project is for the learning purpose");
 });
 
 app.get("/api/users", (req, res) => {
